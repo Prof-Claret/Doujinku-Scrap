@@ -13,7 +13,8 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.disable('x-powered-by');
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h' }));
+// no-cache untuk frontend agar perubahan app.js/styles.css langsung terpakai
+app.use(express.static(path.join(__dirname, 'public'), { etag: true, maxAge: 0, setHeaders(res) { res.set('cache-control', 'no-cache'); } }));
 
 // helper: api wrapper dErr -> res.error
 const ok = (res, data) => res.json({ ok: true, ...data });

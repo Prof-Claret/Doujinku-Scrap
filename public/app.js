@@ -203,7 +203,10 @@
     viewHome(params);
   }
 
-  document.addEventListener('hashchange', router);
+  // hashchange event di-fire pada window (BOM), BUKAN document —
+  // di sinilah "harus refresh dulu" terjadi kalau listener nya salah target
+  window.addEventListener('hashchange', router);
+  window.addEventListener('popstate', router);
   $searchForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const q = $searchInput.value.trim();
