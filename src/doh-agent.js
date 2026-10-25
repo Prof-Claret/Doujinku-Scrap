@@ -24,8 +24,9 @@ async function dohResolve(name) {
   const cached = resolveCache.get(name);
   if (cached && cached.ips.length && cached.expireAt > Date.now()) return cached.ips;
 
-  const ips = await dohViaCloudflare(name).catch(() => []) || await dohViaGoogleJson(name).catch(() => []);
-  resolveCache.set(name, { ips, expireAt: Date.now() + TTL });
+  let ips = await dohViaCloudflare(name).catch(() => []);
+  if (!ips.length) ips = await dohViaGoogleJson(name).catch(() => []);
+  if (ips.length) resolveCache.set(name, { ips, expireAt: Date.now() + TTL });
   return ips;
 }
 

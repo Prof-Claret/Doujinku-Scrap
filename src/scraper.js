@@ -41,7 +41,16 @@ function withCache(key, ttlMs, producer) {
 // ---------- util ----------
 async function getPage(path) {
   const { status, body } = await fetchSite(path);
-  if (status !== 200) throw new Error(`HTTP ${status} saat mengambil ${path}`);
+  if (status !== 200) {
+    const html = body.toString('utf8', 0, 4096);
+    if ((status === 403 || status === 503) && /Just a moment|challenges\.cloudflare\.com|cf-chl/i.test(html)) {
+      throw new Error(
+        `Diblokir Cloudflare (HTTP ${status}) saat mengambil ${path}. ` +
+          'doujinku.org menantang IP server/datacenter (mis. Vercel). Jalankan WE-SCRAPPER secara lokal (npm start) dari koneksi rumah/seluler.'
+      );
+    }
+    throw new Error(`HTTP ${status} saat mengambil ${path}`);
+  }
   return body.toString('utf8');
 }
 
