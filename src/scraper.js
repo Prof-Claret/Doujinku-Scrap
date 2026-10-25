@@ -11,6 +11,22 @@ const cheerio = require('cheerio');
 
 const BASE = `https://${TARGET_HOST}`;
 
+// ---------- registry host gambar yang sah (dipupuk dari hasil scraping) ----------
+const seenImageHosts = new Set(['doujinku.org', 'i0.wp.com', 'i1.wp.com', 'i2.wp.com', 'i3.wp.com', 'cdnasu.xyz']);
+function registerImageUrls(urls) {
+  for (const u of urls || []) {
+    try {
+      seenImageHosts.add(new URL(u).hostname.toLowerCase());
+    } catch { /* abaikan */ }
+  }
+}
+function isKnownImageHost(hostname) {
+  const h = String(hostname || '').toLowerCase();
+  if (seenImageHosts.has(h)) return true;
+  // sufiks umum CDN WordPress image proxy (i*.wp.com)
+  return h.endsWith('.wp.com');
+}
+
 // ---------- cache sederhana (TTL) ----------
 const cache = new Map(); // key -> { data, expireAt }
 function withCache(key, ttlMs, producer) {
@@ -88,7 +104,9 @@ async function getLatest(page = 1, order = 'update') {
   return withCache(`latest:${ord}:${page}`, 2 * 60 * 1000, async () => {
     const qs = ord === 'update' ? `?page=${page}` : `?page=${page}&order=${ord}`;
     const html = await getPage(`/manga/${qs}`);
-    return parseLatest(html, page);
+    const data = parseLatest(html, page);
+    registerImageUrls(data.items.map((i) => i.cover));
+    return data;
   });
 }
 
@@ -115,6 +133,19 @@ async function search(q = '', page = 1) {
 }
 
 // ---------- MANGA DETAIL ----------
+/** Ambil slug terakhir dari href absolut maupun relative, tanpa query/hash */
+function slugFromHref(href) {
+  if (!href) return null;
+  try {
+    const u = new URL(href, BASE);
+    if (u.hostname && u.hostname !== 'doujinku.org') return null; // situs luar
+    const parts = u.pathname.split('/').filter(Boolean);
+    if (!parts.length) return null;
+    return parts[parts.length - 1].replace(/\.html?$/i, '');
+  } catch {
+    return null;
+  }
+}
 function parseManga(html, slug) {
   const $ = cheerio.load(html);
   const $cont = $('.seriestucontl').first();
@@ -152,7 +183,7 @@ function parseManga(html, slug) {
     const $a = $li.find('a').first();
     if (!$a.length) return;
     const href = $a.attr('href') || '';
-    const chapSlug = extractSlug(href, '');
+    const chapSlug = slugFromHref(href);
     if (!chapSlug) return;
     const num = parseFloat($li.attr('data-num')) ||
       parseFloat((text($li.find('.chapternum').text()).match(/[\d.]+$/)) || ['NaN'][0]);
@@ -182,13 +213,24 @@ function parseManga(html, slug) {
   };
 }
 
-async function getManga(slug) {
-  slug = String(slug || '').replace(/[^a-z0-9-_]/gi, '');
+/** Normalisasi slug: dekode %xx, rapikan spasi → dash.
+ * Karakter berbahaya aman karena path akan di-encode penuh (encodeURIComponent),
+ * jadi unicode seperti "○" tetap terjaga seperti permalink asli. */
+function normalizeSlug(raw) {
+  let s = String(raw || '').trim();
+  try { s = decodeURIComponent(s); } catch { /* tetap pakai asli */ }
+  return s.replace(/\s+/g, '-');
+}
+
+async function getManga(slugRaw) {
+  const slug = normalizeSlug(slugRaw);
   if (!slug) throw new Error('Slug manga tidak valid');
   return withCache(`manga:${slug}`, 5 * 60 * 1000, async () => {
-    const html = await getPage(`/manga/${slug}/`);
+    const html = await getPage(`/manga/${encodeURIComponent(slug)}/`);
     if (/<title>.*404/i.test(html) && !chaptersHtmlHas(html)) throw new Error('Manga tidak ditemukan: ' + slug);
-    return parseManga(html, slug);
+    const data = parseManga(html, slug);
+    registerImageUrls([data.cover]);
+    return data;
   });
 }
 
@@ -251,6 +293,7 @@ function parseChapter(html, chapterSlug) {
   const sources = data && Array.isArray(data.sources)
     ? data.sources.map((s) => ({ name: s.source, images: s.images || [] }))
     : [];
+  const nonEmpty = sources.find((s) => s.images.length);
   const prev = slugFromUrl(data && data.prevUrl);
   const next = slugFromUrl(data && data.nextUrl);
 
@@ -258,7 +301,7 @@ function parseChapter(html, chapterSlug) {
     slug: chapterSlug,
     title,
     seriesSlug,
-    images: sources[0] ? sources[0].images : [],
+    images: nonEmpty ? nonEmpty.images : [],
     sources,
     lazyload: data ? !!data.lazyload : false,
     prevSlug: prev,
@@ -277,16 +320,17 @@ function slugFromUrl(url) {
   }
 }
 
-async function getChapter(chapterSlug) {
-  chapterSlug = String(chapterSlug || '').replace(/[^a-z0-9-_]/gi, '');
+async function getChapter(chapterSlugRaw) {
+  const chapterSlug = normalizeSlug(chapterSlugRaw);
   if (!chapterSlug) throw new Error('Slug chapter tidak valid');
   return withCache(`chapter:${chapterSlug}`, 10 * 60 * 1000, async () => {
-    const html = await getPage(`/${chapterSlug}/`);
+    const html = await getPage(`/${encodeURIComponent(chapterSlug)}/`);
     const parsed = parseChapter(html, chapterSlug);
     if (!parsed.images.length) throw new Error('Tidak ada gambar pada chapter: ' + chapterSlug);
+    for (const s of parsed.sources) registerImageUrls(s.images);
     return parsed;
   });
 }
 
-module.exports = { getLatest, search, getManga, getChapter, BASE };
+module.exports = { getLatest, search, getManga, getChapter, BASE, isKnownImageHost };
 module.exports.dohAgent = require('./doh-agent');

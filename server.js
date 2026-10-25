@@ -58,11 +58,10 @@ app.get('/api/chapter/:slug', async (req, res) => {
 });
 
 // ---------- PROXY GAMBAR ----------
-// GET /api/img?u=<url-encoded> — whitelist host untuk mencegah open proxy
-const ALLOWED_HOST_SUFFIX = ['.wp.com', 'doujinku.org', 'cdnasu.xyz', 'bandsif.xyz', 'gsmenu.xyz'];
+// GET /api/img?u=<url-encoded> — whitelist host (statis + hasil scraping dinamis)
+const { isKnownImageHost } = require('./src/scraper');
 function hostAllowed(hostname) {
-  const h = hostname.toLowerCase();
-  return ALLOWED_HOST_SUFFIX.some((s) => h === s || h.endsWith(s));
+  return isKnownImageHost(hostname);
 }
 
 app.get('/api/img', async (req, res) => {

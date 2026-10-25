@@ -37,7 +37,13 @@ npm start        # → http://localhost:3000
 | `GET /api/search?q=...&page=N` | Pencarian (REST WordPress) |
 | `GET /api/manga/:slug` | Detail manga + daftar chapter (rating, genre, info, etc.) |
 | `GET /api/chapter/:slug` | Gambar chapter (`ts_reader.run` blob) + prev/next |
-| `GET /api/img?u=<encoded>` | Proxy gambar (whitelist host) |
+| `GET /api/img?u=<encoded>` | Proxy gambar (whitelist statis + dinamis dari hasil scraping) |
+
+## Perbaikan "manga tidak bisa dibaca" (v1.1)
+
+- **Slug chapter salah** (`https:`): regex slug mengangkap protokol dari URL absolut. Diperbaiki dengan `slugFromHref`.
+- **CDN baru ditolak 403**: setiap manga bisa memakai CDN berbeda (`cdnasu.xyz`, `cdngue.xyz`, `cdn.uqni.net`, …). Kini proxy memakai **registry dinamis** — host yang muncul di hasil scraping otomatis di-whitelist.
+- **Slug unicode/encoded 404** (`%e2%97%8b` = ○): `normalizeSlug` + `encodeURIComponent`.
 
 ## UI (Frontend)
 
