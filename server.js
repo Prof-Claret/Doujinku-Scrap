@@ -58,6 +58,20 @@ app.get('/api/chapter/:slug', async (req, res) => {
   }
 });
 
+// GET /api/download/pdf/:slug
+const { streamChapterPdf } = require('./src/pdf-generator');
+app.get('/api/download/pdf/:slug', async (req, res) => {
+  try {
+    await streamChapterPdf(req.params.slug, req, res);
+  } catch (e) {
+    if (!res.headersSent) {
+      fail(res, e, 500);
+    } else {
+      console.error('Error saat streaming PDF:', e);
+    }
+  }
+});
+
 // ---------- PROXY GAMBAR ----------
 // GET /api/img?u=<url-encoded> — whitelist host (statis + hasil scraping dinamis)
 const { isKnownImageHost } = require('./src/scraper');

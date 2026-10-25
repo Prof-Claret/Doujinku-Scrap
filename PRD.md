@@ -166,6 +166,18 @@ flowchart TD
   - Endpoint: `GET /api/health`
   - Mengembalikan status HTTP 200, daftar IP hasil resolusi DoH aktif, dan basis URL target.
 
+### FR-08: Chapter Download as PDF (Direct Offline Export)
+- **Deskripsi:** Pengguna dapat mengunduh seluruh halaman dalam satu chapter langsung dalam bentuk satu berkas PDF terstruktur untuk kenyamanan membaca secara offline.
+- **Kriteria Penerimaan:**
+  - Endpoint: `GET /api/download/pdf/:slug`
+  - Server mengambil daftar URL gambar chapter dan mengunduh buffer gambar secara streaming melalui `fetchAsset` (DoH + Referer header tersemat).
+  - Setiap gambar dikonversi menjadi satu halaman PDF dengan mempertahankan rasio dimensi gambar asli (aspect ratio).
+  - Dokumen di-stream langsung ke klien dengan header:
+    - `Content-Type: application/pdf`
+    - `Content-Disposition: attachment; filename="<manga-title>-<chapter-slug>.pdf"`
+  - Terdapat mekanisme penanganan error jika sebagian gambar gagal dimuat (retry buffer / placeholder page error).
+  - UI integrasi: Tombol "Download PDF" yang mudah diakses di header reader (`public/app.js`) dan di sebelah judul chapter pada halaman detail manga.
+
 ---
 
 ## 6. Non-Functional Requirements (NFR)
@@ -206,6 +218,7 @@ flowchart TD
 | `GET` | `/api/manga/:slug` | `slug` (string) | Detail serial & chapter list | `{ ok: true, data: MangaDetail }` |
 | `GET` | `/api/chapter/:slug` | `slug` (string) | Daftar URL gambar chapter | `{ ok: true, data: ChapterDetail }` |
 | `GET` | `/api/img` | `u` (URL-encoded string) | Proxy streaming gambar | Binary Image Buffer (`Content-Type: image/*`) |
+| `GET` | `/api/download/pdf/:slug` | `slug` (string) | Download chapter komik dalam format PDF | Dokumen PDF (`Content-Type: application/pdf`) |
 
 ---
 
@@ -224,7 +237,8 @@ flowchart TD
 ## 9. Product Roadmap & Future Enhancements
 
 ### Versi 1.2 (Planned / Immediate)
-- [ ] **Download Chapter (ZIP/CBZ):** Memanfaatkan dependensi `archiver` yang sudah terpasang untuk mengompres seluruh gambar dalam satu chapter menjadi file `.zip` atau `.cbz` untuk dibaca offline.
+- [ ] **Download Chapter (PDF Export):** Generator dokumen PDF per chapter (menggunakan `pdfkit` / streaming compiler) sehingga pengguna dapat mengunduh komik langsung dalam bentuk berkas PDF rapi yang siap dibaca di semua perangkat/PDF reader.
+- [ ] **Download Chapter (ZIP/CBZ - Alternatif):** Opsi unduh arsip gambar terkompresi dengan memanfaatkan library `archiver`.
 - [ ] **Reading Progress & History:** Penyimpanan chapter terakhir yang dibaca menggunakan `localStorage` browser.
 - [ ] **Bookmark / Favorit Lokal:** Fitur pin komik favorit tanpa login akun.
 

@@ -38,6 +38,7 @@ npm start        # → http://localhost:3000
 | `GET /api/manga/:slug` | Detail manga + daftar chapter (rating, genre, info, etc.) |
 | `GET /api/chapter/:slug` | Gambar chapter (`ts_reader.run` blob) + prev/next |
 | `GET /api/img?u=<encoded>` | Proxy gambar (whitelist statis + dinamis dari hasil scraping) |
+| `GET /api/download/pdf/:slug` | Unduh seluruh halaman chapter dalam format PDF utuh |
 
 ## Perbaikan "manga tidak bisa dibaca" (v1.1)
 

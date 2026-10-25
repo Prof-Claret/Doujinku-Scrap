@@ -109,12 +109,22 @@ main { max-width: 1200px; margin: 0 auto; padding: 20px; }
 .chapters { border-top: 1px solid var(--border); }
 .chapters h3 { margin: 18px 0 10px; }
 .chlist { display: grid; gap: 6px; }
-.chlist a {
-  display: flex; justify-content: space-between; padding: 9px 12px;
+.ch-row { display: flex; gap: 8px; align-items: center; }
+.ch-link {
+  flex: 1; display: flex; justify-content: space-between; padding: 9px 12px;
   background: var(--card); border: 1px solid var(--border); border-radius: 6px;
-  font-size: .85rem;
+  font-size: .85rem; transition: border-color .15s, color .15s;
 }
-.chlist a:hover { border-color: var(--accent); color: #fff; }
+.ch-link:hover { border-color: var(--accent); color: #fff; }
+.ch-dl {
+  display: inline-flex; align-items: center; gap: 4px; padding: 9px 14px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
+  font-size: .78rem; font-weight: 600; color: #38bdf8; white-space: nowrap;
+  transition: all .15s ease;
+}
+.ch-dl:hover {
+  background: #38bdf8; color: #0b0e14; border-color: #38bdf8;
+}
 .chlist .date { color: var(--muted); font-size: .75rem; }
 
 /* reader */
@@ -122,11 +132,20 @@ main { max-width: 1200px; margin: 0 auto; padding: 20px; }
 .reader .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
 .reader .head h2 { font-size: 1.05rem; margin: 0; }
 .reader .nav-btn {
+  display: inline-flex; align-items: center; justify-content: center;
   padding: 8px 16px; border-radius: 8px; font-size: .85rem; cursor: pointer;
   background: var(--accent); color: #fff; border: 0; font-weight: 600;
+  text-decoration: none;
 }
 .reader .nav-btn:disabled { opacity: .4; cursor: not-allowed; }
 .reader .nav-btn.ghost { background: var(--bg2); border: 1px solid var(--border); color: var(--text); }
+.reader .nav-btn.dl-btn {
+  background: var(--bg2); border: 1px solid var(--border); color: #38bdf8;
+  gap: 6px; transition: all .15s ease;
+}
+.reader .nav-btn.dl-btn:hover {
+  background: #38bdf8; color: #0b0e14; border-color: #38bdf8;
+}
 .reader .pages img {
   display: block; width: 100%; margin: 0 auto 6px;
   background: var(--bg2); border-radius: 4px; min-height: 40px;

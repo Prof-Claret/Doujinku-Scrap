@@ -122,10 +122,15 @@
               <h3>Daftar Chapter (${m.chaptersCount})</h3>
               <div class="chlist">
                 ${m.chapters.map((c) => `
-                  <a href="#/c/${esc(c.slug)}">
-                    <span>${esc(c.name)}</span>
-                    <span class="date">${esc(c.date)}</span>
-                  </a>`).join('')}
+                  <div class="ch-row">
+                    <a class="ch-link" href="#/c/${esc(c.slug)}">
+                      <span>${esc(c.name)}</span>
+                      <span class="date">${esc(c.date)}</span>
+                    </a>
+                    <a class="ch-dl" href="/api/download/pdf/${encodeURIComponent(c.slug)}" title="Download ${esc(c.name)} sebagai PDF" download>
+                      📥 PDF
+                    </a>
+                  </div>`).join('')}
               </div>
             </div>
           </div>
@@ -146,7 +151,8 @@
         <div class="reader">
           <div class="head">
             <h2>${esc(c.title)}</h2>
-            <div style="display:flex;gap:8px">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <a class="nav-btn dl-btn" href="/api/download/pdf/${encodeURIComponent(c.slug)}" title="Download PDF" download>📥 Unduh PDF</a>
               <button class="nav-btn ghost" id="prevCh" ${c.prevSlug ? '' : 'disabled'}>← Prev</button>
               <button class="nav-btn ghost" id="nextCh" ${c.nextSlug ? '' : 'disabled'}>Next →</button>
             </div>
@@ -156,8 +162,9 @@
               <img src="${proxy(u)}" alt="hal ${i + 1}" loading="lazy">
               <div class="pagenum">halaman ${i + 1} / ${c.images.length}</div>`).join('')}
           </div>
-          <div class="head" style="justify-content:center">
+          <div class="head" style="justify-content:center;gap:12px;margin-top:20px">
             <button class="nav-btn" id="prevCh2" ${c.prevSlug ? '' : 'disabled'}>← Prev Chapter</button>
+            <a class="nav-btn dl-btn" href="/api/download/pdf/${encodeURIComponent(c.slug)}" title="Download PDF" download>📥 Unduh PDF</a>
             <button class="nav-btn" id="nextCh2" ${c.nextSlug ? '' : 'disabled'}>Next Chapter →</button>
           </div>
         </div>`;
