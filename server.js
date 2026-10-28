@@ -13,8 +13,18 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.disable('x-powered-by');
+
+// ---------- HALAMAN UTAMA ----------
+// "/" → welcome page statis (SCARLET-MSD), "/app" → SPA katalog.
+// Route eksplisit ditempatkan SEBELUM express.static agar index.html
+// tidak pernah di-serve di "/" dan pengunjung selalu disambut welcome page dulu.
+const sendFirst = (res, file, title) =>
+  res.sendFile(path.join(__dirname, 'public', file));
+app.get('/', (_req, res) => sendFirst(res, 'welcome.html'));
+app.get('/app', (_req, res) => sendFirst(res, 'index.html'));
+
 // no-cache untuk frontend agar perubahan app.js/styles.css langsung terpakai
-app.use(express.static(path.join(__dirname, 'public'), { etag: true, maxAge: 0, setHeaders(res) { res.set('cache-control', 'no-cache'); } }));
+app.use(express.static(path.join(__dirname, 'public'), { etag: true, maxAge: 0, index: false, setHeaders(res) { res.set('cache-control', 'no-cache'); } }));
 
 // helper: api wrapper dErr -> res.error
 const ok = (res, data) => res.json({ ok: true, ...data });
@@ -112,6 +122,16 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ WE-SCRAPPER berjalan di http://localhost:${PORT}`);
+// Penanganan ramah saat port sudah dipakai (mis. server lama masih jalan)
+const server = app.listen(PORT, () => {
+  console.log(`✅ ScarletMSD berjalan di http://localhost:${PORT}`);
+});
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} sudah dipakai (kemungkinan server lama masih berjalan).`);
+    console.error(`   Matikan dulu:  kill $(lsof -t -i:${PORT})   atau:  fuser -k ${PORT}/tcp`);
+    console.error(`   Atau jalankan di port lain:  PORT=3001 npm start`);
+    process.exit(1);
+  }
+  throw err;
 });

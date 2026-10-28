@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ScarletMSD — Selamat Datang</title>
+  <style>
+    :root {
+      --bg: #0b0e14; --bg2: #12161f; --card: #171c26; --border: #232a38;
+      --text: #e6e9ef; --muted: #8b93a3; --accent: #6366f1; --accent2: #8b5cf6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg); color: var(--text); min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    a { color: inherit; text-decoration: none; }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px; border-bottom: 1px solid var(--border);
+      background: rgba(11,14,20,.9); user-select: none;
+    }
+    .brand { font-weight: 800; letter-spacing: 1.5px; font-size: 1.1rem; }
+    .brand span { color: var(--accent); }
+    header .gh { font-size: .84rem; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+    header .gh:hover { color: #fff; }
+    main { flex: 1; width: 100%; max-width: 1000px; margin: 0 auto; padding: 24px 20px; }
+
+    .hero {
+      text-align: center; padding: 66px 20px 42px; border-radius: 16px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(600px 260px at 50% -60px, rgba(99,102,241,.22), transparent),
+        radial-gradient(400px 220px at 85% 110%, rgba(139,92,246,.12), transparent),
+        var(--bg2);
+    }
+    .logo { font-size: 2.4rem; }
+    .brandline { font-weight: 800; letter-spacing: 4px; text-transform: uppercase; font-size: .8rem; color: var(--muted); margin-bottom: 14px; }
+    .brandline b {
+      color: var(--text); font-size: 1.6rem; letter-spacing: 2px; display: block; margin-top: 6px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero h1 { margin: 14px 0; font-size: clamp(1.5rem, 4.5vw, 2.4rem); line-height: 1.25; }
+    .lead { max-width: 580px; margin: 0 auto 26px; color: #c3c9d4; line-height: 1.7; font-size: .95rem; }
+    .actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; border-radius: 10px; font-weight: 600; font-size: .95rem; transition: all .15s ease; }
+    .btn.primary { background: var(--accent); color: #fff; }
+    .btn.primary:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn.ghost { border: 1px solid var(--border); }
+    .btn.ghost:hover { border-color: var(--accent); color: #fff; }
+    .btn.gh { background: var(--card); border: 1px solid var(--border); gap: 10px; }
+    .btn.gh:hover { border-color: var(--accent); background: rgba(99,102,241,.12); }
+    .stats { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 34px; color: var(--muted); }
+    .stats div { display: flex; flex-direction: column; gap: 2px; }
+    .stats b { color: var(--text); }
+    .stats span { font-size: .74rem; }
+
+    .features { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 26px 0; }
+    .feature { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; transition: border-color .15s, transform .15s; }
+    .feature:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .feature .ic { font-size: 1.5rem; margin-bottom: 8px; }
+    .feature h3 { margin: 0 0 6px; font-size: .95rem; }
+    .feature p { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.6; }
+
+    footer { text-align: center; color: var(--muted); font-size: .76rem; padding: 24px 12px; border-top: 1px solid var(--border); user-select: none; }
+    footer a { color: var(--accent); }
+    footer .fgh { color: inherit; }
+    footer .fgh:hover { color: #fff; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">ScarletMSD</div>
+    <a class="gh" href="https://github.com/Prof-Claret" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub @Prof-Claret
+    </a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="logo">🌸</div>
+      <div class="brandline">Selamat datang di <b>ScarletMSD</b></div>
+      <h1>Baca Manga <em>Bebas Blokir</em>,<br>Langsung dari Sumbernya.</h1>
+      <p class="lead">
+        Reader manga &amp; doujinshi dari doujinku.org dengan <b>bypass DNS hijack ISP</b>,
+        proxy gambar built-in, dan unduhan PDF per chapter — tanpa ribet.
+      </p>
+      <div class="actions">
+        <a class="btn primary" href="/app">🔍 Masuk ke Katalog</a>
+        <a class="btn ghost" href="/app#/about">ℹ️ Tentang App &amp; Dev</a>
+      </div>
+      <div class="stats">
+        <div><b>DoH</b><span>Bypass blokir</span></div>
+        <div><b>Proxy</b><span>Aman mixed-content</span></div>
+        <div><b>PDF</b><span>Unduh chapter</span></div>
+        <div><b>Cache</b><span>Hemat request</span></div>
+      </div>
+    </section>
+
+    <div class="features">
+      <div class="feature"><div class="ic">🛡️</div><h3>Anti DNS Hijack</h3><p>Resolusi lewat DNS-over-HTTPS Cloudflare &amp; TLS langsung ke IP asli — halaman blokir ISP tidak lagi mengganggu.</p></div>
+      <div class="feature"><div class="ic">🖼️</div><h3>Proxy Gambar</h3><p>Semua gambar lewat proxy dengan whitelist host + referer, mengatasi CDN http-only dan mixed-content.</p></div>
+      <div class="feature"><div class="ic">📄</div><h3>Unduh PDF</h3><p>Setiap chapter bisa diunduh sebagai PDF utuh, siap dibaca offline.</p></div>
+      <div class="feature"><div class="ic">⚡</div><h3>Cache Memori</h3><p>Hasil scraping di-cache sementara agar tidak memicu rate-limit Cloudflare.</p></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Sumber data: <a href="https://doujinku.org/" target="_blank" rel="noopener">doujinku.org</a> · scraper offline + proxy gambar · hanya untuk keperluan pribadi.</p>
+    <p>
+      <a href="https://github.com/Prof-Claret" class="fgh" target="_blank" rel="noopener">GitHub @Prof-Claret</a> ·
+      <a href="/app#/about">Tentang App &amp; Dev</a> ·
+      <a href="/app">Masuk ke Katalog</a>
+    </p>
+  </footer>
+</body>
+</html>
