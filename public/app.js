@@ -243,23 +243,30 @@
 
   // ---------- dev profile ----------
   const GH = 'Prof-Claret';
-  const LANG_COLORS = { JavaScript: '#f1e05a', TypeScript: '#3178c6', HTML: '#e34c26', CSS: '#563d7c', Python: '#3572a5', Go: '#00add8', Rust: '#dea584', 'C++': '#f34b7d', 'C#': '#178600', PHP: '#4f5d95', Shell: '#89e051', Java: '#b07219' };
   const fmtDate = (s) => {
     try { return new Date(s).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); }
     catch { return ''; }
   };
   const num = (n) => (n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'k' : String(n ?? 0));
 
+  // Badge eksklusif — jangan dibuat-buat, ini gelar resmi 👑
+  const BADGES = `
+    <div class="badges">
+      <span class="pbadge admin" title="Pemilik & admin ScarletMSD — akses penuh ke sistem">👑 Admin</span>
+      <span class="pbadge dev" title="Membangun & mengembangkan ScarletMSD">⚙️ Developer</span>
+      <span class="pbadge wibu" title="Gelar eksklusif: level wibu maksimum umum semesta">✨ Wibu Papan Atas</span>
+    </div>`;
+
   function devSkeleton() {
     return `
       <a class="backlink" href="#/about">← Kembali ke Tentang</a>
       <div class="devpage">
         <div class="devcard2">
-          <div class="devbanner"></div>
           <div class="devbody">
             <div class="devprof">
               <span class="devava-ring"><span class="devava" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">PC</span></span>
               <h2 class="devname grad-text">Prof-Claret</h2>
+              ${BADGES}
               <div class="devhandle">@${GH} · GitHub</div>
               <p class="devbio">Developer di balik ScarletMSD — membangun scraper, bypass anti-blokir, dan frontend ringan.</p>
               <p class="devlead"><span class="skel-inline" style="width:220px;height:.9em"></span></p>
@@ -274,52 +281,33 @@
                 <div><b>–</b><span>Repositori</span></div>
                 <div><b>–</b><span>Pengikut</span></div>
                 <div><b>–</b><span>Mengikuti</span></div>
-                <div><b>–</b><span>Bintang ★</span></div>
               </div>
             </div>
           </div>
-        </div>`;
+        </div>
+      </div>`;
   }
 
   async function viewDev() {
     hideMsg(); setTitle('Developer');
     showTabs(false);
-    $view.innerHTML = devSkeleton() + '</div>';
+    $view.innerHTML = devSkeleton();
 
-    let user = null, repos = null;
+    let user = null;
     try {
       const r = await fetch(`https://api.github.com/users/${GH}`);
       if (r.ok) user = await r.json();
     } catch { /* offline → pakai data statis */ }
-    if (user) {
-      try {
-        const r = await fetch(`https://api.github.com/users/${GH}/repos?per_page=100&sort=updated`);
-        if (r.ok) repos = await r.json();
-      } catch { /* abaikan */ }
-    }
-
-    const stars = (repos || []).reduce((a, r) => a + (r.stargazers_count || 0), 0);
-    const statsHTML = `
-      <div class="devstats">
-        <div><b>${num(user ? user.public_repos : null)}</b><span>Repositori</span></div>
-        <div><b>${num(user ? user.followers : null)}</b><span>Pengikut</span></div>
-        <div><b>${num(user ? user.following : null)}</b><span>Mengikuti</span></div>
-        <div><b>${num(stars)}</b><span>Bintang ★</span></div>
-      </div>`;
-
-    const top = (repos || [])
-      .sort((a, b) => (b.stargazers_count - a.stargazers_count) || (new Date(b.pushed_at) - new Date(a.pushed_at)))
-      .slice(0, 6);
 
     $view.innerHTML = `
       <a class="backlink" href="#/about">← Kembali ke Tentang</a>
       <div class="devpage">
         <div class="devcard2">
-          <div class="devbanner"></div>
           <div class="devbody">
             <div class="devprof">
               <span class="devava-ring"><img class="devava" src="${esc(user?.avatar_url || 'https://github.com/' + GH + '.png')}" alt="Avatar ${GH}" loading="lazy"></span>
               <h2 class="devname grad-text">${esc(user?.name || GH)}</h2>
+              ${BADGES}
               <div class="devhandle">@${GH}${user?.company ? ' · ' + esc(user.company) : ''}${user?.location ? ' · 📍 ' + esc(user.location) : ''}</div>
               <p class="devbio">${esc(user?.bio || 'Developer di balik ScarletMSD — membangun scraper, bypass anti-blokir, dan frontend ringan.')}</p>
               <p class="devlead">✨ Aktif di GitHub sejak ${user?.created_at ? fmtDate(user.created_at) : '—'}${user?.blog ? ` · <a href="${esc(user.blog)}" target="_blank" rel="noopener">${esc(user.blog.replace(/^https?:\/\//, ''))}</a>` : ''}</p>
@@ -330,7 +318,11 @@
                 </a>
                 <a class="btn ghost" href="#/about">↩️ Tentang App</a>
               </div>
-              ${statsHTML}
+              <div class="devstats">
+                <div><b>${num(user ? user.public_repos : null)}</b><span>Repositori</span></div>
+                <div><b>${num(user ? user.followers : null)}</b><span>Pengikut</span></div>
+                <div><b>${num(user ? user.following : null)}</b><span>Mengikuti</span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -343,25 +335,6 @@
             <span>PDF Generator</span><span>Vanilla SPA</span><span>CSS</span>
           </div>
         </section>
-
-        ${top.length ? `
-        <section class="devsec">
-          <h3>🚀 Proyek Teratas</h3>
-          <div class="reponet">
-            ${top.map((r) => `
-              <a class="repo" href="${esc(r.html_url)}" target="_blank" rel="noopener">
-                <div class="rname">📦 ${esc(r.name)}</div>
-                ${r.description ? `<p>${esc(r.description)}</p>` : ''}
-                <div class="rfoot">
-                  ${r.language ? `<span class="dot" style="background:${LANG_COLORS[r.language] || '#8b93a3'}"></span>${esc(r.language)}` : '<span></span>'}
-                  <span>★ ${num(r.stargazers_count)} · dibuat ${fmtDate(r.created_at)}</span>
-                </div>
-              </a>`).join('')}
-          </div>
-          <p style="text-align:center;margin-top:14px">
-            <a class="btn ghost" href="https://github.com/${GH}?tab=repositories" target="_blank" rel="noopener">Lihat semua repositori →</a>
-          </p>
-        </section>` : ''}
       </div>`;
   }
 
