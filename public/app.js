@@ -241,6 +241,130 @@
     }
   }
 
+  // ---------- dev profile ----------
+  const GH = 'Prof-Claret';
+  const LANG_COLORS = { JavaScript: '#f1e05a', TypeScript: '#3178c6', HTML: '#e34c26', CSS: '#563d7c', Python: '#3572a5', Go: '#00add8', Rust: '#dea584', 'C++': '#f34b7d', 'C#': '#178600', PHP: '#4f5d95', Shell: '#89e051', Java: '#b07219' };
+  const fmtDate = (s) => {
+    try { return new Date(s).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); }
+    catch { return ''; }
+  };
+  const num = (n) => (n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'k' : String(n ?? 0));
+
+  function devSkeleton() {
+    return `
+      <a class="backlink" href="#/about">← Kembali ke Tentang</a>
+      <div class="devpage">
+        <div class="devcard2">
+          <div class="devbanner"></div>
+          <div class="devbody">
+            <div class="devprof">
+              <span class="devava-ring"><span class="devava" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">PC</span></span>
+              <h2 class="devname grad-text">Prof-Claret</h2>
+              <div class="devhandle">@${GH} · GitHub</div>
+              <p class="devbio">Developer di balik ScarletMSD — membangun scraper, bypass anti-blokir, dan frontend ringan.</p>
+              <p class="devlead"><span class="skel-inline" style="width:220px;height:.9em"></span></p>
+              <div class="devbtns">
+                <a class="btn gh" href="https://github.com/${GH}" target="_blank" rel="noopener">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                  Ikuti di GitHub
+                </a>
+                <a class="btn ghost" href="#/about">↩️ Tentang App</a>
+              </div>
+              <div class="devstats">
+                <div><b>–</b><span>Repositori</span></div>
+                <div><b>–</b><span>Pengikut</span></div>
+                <div><b>–</b><span>Mengikuti</span></div>
+                <div><b>–</b><span>Bintang ★</span></div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+  }
+
+  async function viewDev() {
+    hideMsg(); setTitle('Developer');
+    showTabs(false);
+    $view.innerHTML = devSkeleton() + '</div>';
+
+    let user = null, repos = null;
+    try {
+      const r = await fetch(`https://api.github.com/users/${GH}`);
+      if (r.ok) user = await r.json();
+    } catch { /* offline → pakai data statis */ }
+    if (user) {
+      try {
+        const r = await fetch(`https://api.github.com/users/${GH}/repos?per_page=100&sort=updated`);
+        if (r.ok) repos = await r.json();
+      } catch { /* abaikan */ }
+    }
+
+    const stars = (repos || []).reduce((a, r) => a + (r.stargazers_count || 0), 0);
+    const statsHTML = `
+      <div class="devstats">
+        <div><b>${num(user ? user.public_repos : null)}</b><span>Repositori</span></div>
+        <div><b>${num(user ? user.followers : null)}</b><span>Pengikut</span></div>
+        <div><b>${num(user ? user.following : null)}</b><span>Mengikuti</span></div>
+        <div><b>${num(stars)}</b><span>Bintang ★</span></div>
+      </div>`;
+
+    const top = (repos || [])
+      .sort((a, b) => (b.stargazers_count - a.stargazers_count) || (new Date(b.pushed_at) - new Date(a.pushed_at)))
+      .slice(0, 6);
+
+    $view.innerHTML = `
+      <a class="backlink" href="#/about">← Kembali ke Tentang</a>
+      <div class="devpage">
+        <div class="devcard2">
+          <div class="devbanner"></div>
+          <div class="devbody">
+            <div class="devprof">
+              <span class="devava-ring"><img class="devava" src="${esc(user?.avatar_url || 'https://github.com/' + GH + '.png')}" alt="Avatar ${GH}" loading="lazy"></span>
+              <h2 class="devname grad-text">${esc(user?.name || GH)}</h2>
+              <div class="devhandle">@${GH}${user?.company ? ' · ' + esc(user.company) : ''}${user?.location ? ' · 📍 ' + esc(user.location) : ''}</div>
+              <p class="devbio">${esc(user?.bio || 'Developer di balik ScarletMSD — membangun scraper, bypass anti-blokir, dan frontend ringan.')}</p>
+              <p class="devlead">✨ Aktif di GitHub sejak ${user?.created_at ? fmtDate(user.created_at) : '—'}${user?.blog ? ` · <a href="${esc(user.blog)}" target="_blank" rel="noopener">${esc(user.blog.replace(/^https?:\/\//, ''))}</a>` : ''}</p>
+              <div class="devbtns">
+                <a class="btn gh" href="https://github.com/${GH}" target="_blank" rel="noopener">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                  Ikuti di GitHub
+                </a>
+                <a class="btn ghost" href="#/about">↩️ Tentang App</a>
+              </div>
+              ${statsHTML}
+            </div>
+          </div>
+        </div>
+
+        <section class="devsec">
+          <h3>🛠️ Keahlian</h3>
+          <div class="techs">
+            <span>Node.js</span><span>Express</span><span>JavaScript</span>
+            <span>Web Scraping</span><span>Cheerio</span><span>DNS / Networking</span>
+            <span>PDF Generator</span><span>Vanilla SPA</span><span>CSS</span>
+          </div>
+        </section>
+
+        ${top.length ? `
+        <section class="devsec">
+          <h3>🚀 Proyek Teratas</h3>
+          <div class="reponet">
+            ${top.map((r) => `
+              <a class="repo" href="${esc(r.html_url)}" target="_blank" rel="noopener">
+                <div class="rname">📦 ${esc(r.name)}</div>
+                ${r.description ? `<p>${esc(r.description)}</p>` : ''}
+                <div class="rfoot">
+                  ${r.language ? `<span class="dot" style="background:${LANG_COLORS[r.language] || '#8b93a3'}"></span>${esc(r.language)}` : '<span></span>'}
+                  <span>★ ${num(r.stargazers_count)} · dibuat ${fmtDate(r.created_at)}</span>
+                </div>
+              </a>`).join('')}
+          </div>
+          <p style="text-align:center;margin-top:14px">
+            <a class="btn ghost" href="https://github.com/${GH}?tab=repositories" target="_blank" rel="noopener">Lihat semua repositori →</a>
+          </p>
+        </section>` : ''}
+      </div>`;
+  }
+
   function viewAbout() {
     hideMsg(); setTitle('Tentang');
     showTabs(false);
@@ -280,6 +404,7 @@
                 <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
                 github.com/Prof-Claret
               </a>
+              <a class="btn ghost" href="#/dev">✨ Profil Dev Lengkap →</a>
             </div>
           </div>
         </section>
@@ -316,12 +441,17 @@
   function router() {
     const { parts, params } = parseHash();
     window.scrollTo(0, 0);
-    if (parts[0] === 'browse') return viewHome(params);
-    if (parts[0] === 'about') return viewAbout();
-    if (parts[0] === 'manga' && parts[1]) return viewManga(parts[1]);
-    if (parts[0] === 'c' && parts[1]) return viewChapter(parts[1]);
-    if (parts[0] === 's') return viewSearch(parts);
-    return viewWelcome();
+    Promise.resolve()
+      .then(() => {
+        if (parts[0] === 'browse') return viewHome(params);
+        if (parts[0] === 'about') return viewAbout();
+        if (parts[0] === 'dev') return viewDev();
+        if (parts[0] === 'manga' && parts[1]) return viewManga(parts[1]);
+        if (parts[0] === 'c' && parts[1]) return viewChapter(parts[1]);
+        if (parts[0] === 's') return viewSearch(parts);
+        return viewWelcome();
+      })
+      .catch((e) => showMsg('Terjadi kesalahan: ' + (e && e.message ? e.message : e), 'error'));
   }
 
   // hashchange event di-fire pada window (BOM), BUKAN document —

@@ -18,10 +18,14 @@ app.disable('x-powered-by');
 // "/" → welcome page statis (SCARLET-MSD), "/app" → SPA katalog.
 // Route eksplisit ditempatkan SEBELUM express.static agar index.html
 // tidak pernah di-serve di "/" dan pengunjung selalu disambut welcome page dulu.
-const sendFirst = (res, file, title) =>
-  res.sendFile(path.join(__dirname, 'public', file));
+const sendFirst = (res, file) =>
+  res.sendFile(path.join(__dirname, 'public', file), {
+    headers: { 'cache-control': 'no-cache' },
+  });
 app.get('/', (_req, res) => sendFirst(res, 'welcome.html'));
 app.get('/app', (_req, res) => sendFirst(res, 'index.html'));
+// Pintasan aman → redirect ke SPA (tanpa bergantung navigasi fragment browser)
+app.get(['/about', '/dev'], (req, res) => res.redirect('/app#' + req.path));
 
 // no-cache untuk frontend agar perubahan app.js/styles.css langsung terpakai
 app.use(express.static(path.join(__dirname, 'public'), { etag: true, maxAge: 0, index: false, setHeaders(res) { res.set('cache-control', 'no-cache'); } }));

@@ -275,3 +275,95 @@ footer a { color: var(--accent); }
   padding: 6px 14px; font-size: .8rem; color: var(--muted);
   background: var(--bg2); border: 1px solid var(--border); border-radius: 999px;
 }
+.btn.ghost { margin-top: 8px; }
+.devcard > div { flex: 1; }
+
+/* ---------- dev profile (#/dev) ---------- */
+.devpage { max-width: 860px; margin: 0 auto; }
+.devpage .devlead { margin: 0 0 16px; color: var(--muted); font-size: .82rem; }
+.devpage .devlead a { color: var(--accent); }
+.skel-inline { display: inline-block; background: linear-gradient(100deg, var(--bg2) 40%, #1c2230 50%, var(--bg2) 60%); background-size: 200%; animation: sk 1.2s infinite linear; border-radius: 4px; vertical-align: middle; }
+
+.devcard2 {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  overflow: hidden; margin-bottom: 18px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+}
+.devbanner {
+  height: 120px;
+  background: linear-gradient(120deg, #6366f1, #8b5cf6, #ec4899, #38bdf8, #6366f1);
+  background-size: 300% 300%;
+  animation: devgrad 8s ease infinite;
+  position: relative;
+}
+.devbanner::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(400px 120px at 30% 120%, rgba(255,255,255,.25), transparent);
+}
+@keyframes devgrad {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.devbody { padding: 0 24px 24px; }
+.devprof { text-align: center; }
+
+.devava-ring {
+  display: inline-flex; padding: 4px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  margin-top: -44px; animation: glow 2.4s ease-in-out infinite;
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,.45); }
+  50% { box-shadow: 0 0 24px 6px rgba(139,92,246,.5); }
+}
+.devava {
+  width: 92px; height: 92px; border-radius: 50%; object-fit: cover;
+  border: 3px solid var(--card); display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 1.6rem;
+}
+.grad-text {
+  background: linear-gradient(90deg, var(--accent), var(--accent2), #ec4899);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.devname { margin: 12px 0 2px; font-size: 1.7rem; }
+.devhandle { color: var(--muted); font-size: .85rem; margin-bottom: 10px; }
+.devbio { margin: 0 auto 8px; max-width: 520px; color: #c3c9d4; line-height: 1.7; font-size: .9rem; }
+
+.devbtns { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 4px 0 18px; }
+.devbtns .ghost { margin-top: 0; }
+
+.devstats {
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  margin-top: 4px;
+}
+.devstats div {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 8px; display: flex; flex-direction: column; gap: 2px;
+  transition: border-color .15s, transform .15s;
+}
+.devstats div:hover { border-color: var(--accent); transform: translateY(-2px); }
+.devstats b { font-size: 1.15rem; }
+.devstats span { font-size: .72rem; color: var(--muted); }
+
+.devsec {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 20px; margin-bottom: 18px;
+}
+.devsec h3 { margin: 0 0 12px; font-size: 1rem; }
+
+.reponet {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+.repo {
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px; transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+.repo:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(99,102,241,.12); }
+.repo .rname { font-weight: 700; font-size: .9rem; }
+.repo p { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.55; flex: 1; }
+.repo .rfoot { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--muted); font-size: .72rem; }
+.repo .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.repo .rfoot span:first-child { display: inline-flex; align-items: center; }
