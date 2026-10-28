@@ -1,0 +1,13 @@
+# Cloudflare Tunnel — WE-SCRAPPER
+# https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/configuration/configuration-file/ingress
+
+tunnel: c706a048-97e5-48a7-90a8-2d1dc67ae60b
+credentials-file: /root/.cloudflared/c706a048-97e5-48a7-90a8-2d1dc67ae60b.json
+
+ingress:
+  # Web app + API (semua pakai root path, frontend pakai hash routing)
+  - hostname: doujinku.org
+    service: http://localhost:3000
+
+  # Catch-all: wajib ada, untuk request yang tidak ada ingress rule-nya
+  - service: http_status:404
